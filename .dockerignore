@@ -1,0 +1,21 @@
+.git
+.github
+.venv
+node_modules
+**/__pycache__/
+**/*.pyc
+.env
+.env.*
+# the service-account key must never be copied into an image
+credentials.json
+*-credentials.json
+google-credentials.json
+**/*.sqlite3
+staticfiles/
+media/
+logs/
+tests/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/

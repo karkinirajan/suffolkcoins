@@ -1,0 +1,12 @@
+{
+  "name": "suffolkcoins-assets",
+  "private": true,
+  "description": "Builds static/css/site.css (Tailwind) from the templates. The built file is committed, so deploying needs no Node.js.",
+  "scripts": {
+    "build:css": "tailwindcss -i assets/site.css -o static/css/site.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

@@ -1,46 +1,19 @@
 {% load static %}
-<script defer src="https://unpkg.com/alpinejs@3.2.3/dist/cdn.min.js"></script>
-
-<article x-data="slider" x-init="startSlider"
-  class="relative flex flex-col items-center justify-center sm:flex-row flex-shrink-0 overflow-hidden m-2 sm:m-6 max-w-7xl mx-auto shadow-xl rounded-xl">
-  <div
-    class="rounded-full bg-gray-600 text-white absolute top-5 right-5 text-xs sm:text-sm px-2 text-center rounded-xl">
-    <span x-text="currentIndex"></span>/
-    <span x-text="images.length"></span>
+<article data-carousel
+  class="relative flex flex-col items-center justify-center sm:flex-row flex-shrink-0 overflow-hidden m-2 sm:m-6 max-w-7xl mx-auto shadow-xl rounded-xl"
+  aria-roledescription="carousel" aria-label="Featured banners">
+  <div class="rounded-full bg-gray-600 text-white absolute top-5 right-5 text-xs sm:text-sm px-2 text-center rounded-xl">
+    <span data-carousel-index>1</span>/<span data-carousel-count>3</span>
   </div>
 
-  <template x-for="(image, index) in images">
-    <figure class="h-[10rem] sm:h-auto w-full sm:w-auto rounded-xl px-2 sm:px-0" x-show="currentIndex == index + 1"
-      x-transition:enter="transition transform duration-100" x-transition:enter-start="opacity-0"
-      x-transition:enter-end="" x-transition:leave="transition transform duration-300" x-transition:leave-start=""
-      x-transition:leave-end="opacity-0">
-      <a href="{% url 'inventory' %}" target="_blank" class="px-2 sm:px-4"><img class="rounded-xl" :src="image"
-          alt="Banner Image" /></a>
-    </figure>
-  </template>
+  {# The first banner is shown without JavaScript; carousel.js rotates them. #}
+  <figure data-slide class="h-[10rem] sm:h-auto w-full sm:w-auto rounded-xl px-2 sm:px-0">
+    <a href="{% url 'inventory' %}" target="_blank" rel="noopener" class="px-2 sm:px-4"><img class="rounded-xl" src="{% static 'banner1.jpg' %}" alt="Banner" /></a>
+  </figure>
+  <figure data-slide class="hidden h-[10rem] sm:h-auto w-full sm:w-auto rounded-xl px-2 sm:px-0">
+    <a href="{% url 'inventory' %}" target="_blank" rel="noopener" class="px-2 sm:px-4"><img class="rounded-xl" src="{% static 'banner2.jpg' %}" alt="Banner" loading="lazy" /></a>
+  </figure>
+  <figure data-slide class="hidden h-[10rem] sm:h-auto w-full sm:w-auto rounded-xl px-2 sm:px-0">
+    <a href="{% url 'inventory' %}" target="_blank" rel="noopener" class="px-2 sm:px-4"><img class="rounded-xl" src="{% static 'banner3.jpg' %}" alt="Banner" loading="lazy" /></a>
+  </figure>
 </article>
-
-<script>
-  document.addEventListener("alpine:init", () => {
-    Alpine.data("slider", () => ({
-      currentIndex: 1,
-      images: [
-        "{% static 'banner1.jpg' %}",
-        "{% static 'banner2.jpg' %}",
-        "{% static 'banner3.jpg' %}",
-      ],
-      startSlider() {
-        setInterval(() => {
-          this.next();
-        }, 3000); // Changes slide every 2 seconds
-      },
-      next() {
-        if (this.currentIndex < this.images.length) {
-          this.currentIndex = this.currentIndex + 1;
-        } else {
-          this.currentIndex = 1; // Go back to the first image
-        }
-      },
-    }));
-  });
-</script>

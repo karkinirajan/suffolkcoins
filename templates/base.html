@@ -1,20 +1,26 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>Suffolkcoins - Home</title>
-</head>
+    <title>{% block title %}Suffolkcoins - Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}" />
+  </head>
 
-<body>
+  <body>
     {% include 'partials/navbar.html' %}
 
-    {% block content %}
-    {% endblock %}
-    {% include 'partials/form.html' %}
-    {% include 'partials/footer.html' %}
-</body>
+    {% if messages %}
+      <div class="max-w-2xl mx-auto px-4 mt-4" role="status">
+        {% for message in messages %}
+          <p class="rounded-md px-4 py-3 mb-2 {% if message.tags == 'success' %}bg-green-100 text-green-900{% else %}bg-red-100 text-red-900{% endif %}">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
 
+    {% block content %}{% endblock %}
+
+    {% include 'partials/footer.html' %}
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

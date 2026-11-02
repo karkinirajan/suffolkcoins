@@ -1,117 +1,95 @@
-# SuffolkCoins 🪙  
-### A Modern and Secure Cryptocurrency Platform  
+# Suffolkcoins
 
-SuffolkCoins is a cutting-edge cryptocurrency platform designed to provide users with a seamless and secure experience for managing digital assets. Built with a combination of modern web technologies, SuffolkCoins ensures a responsive interface, robust functionality, and a user-friendly experience.
+The website of Suffolk Coins, a coin dealer: a landing page with a banner carousel, a **live inventory list** (a Google Sheet exported as a PDF), and a contact form whose messages are stored for the owner to answer. A small Django site with an admin.
 
----
+(The old README described a "cryptocurrency platform" with secure transactions and live market data. The code never did any of that.)
 
-## ✨ Features  
+## What it does
 
-- **Secure Transactions**:  
-  Robust security measures to ensure safe and encrypted transactions.  
+| Page | |
+|---|---|
+| `/` | Landing page: contact details, banner carousel, contact form |
+| `/inventory/` | The inventory Google Sheet exported as a PDF and shown in the browser. Cached for 5 minutes; the last good copy is shown if Google is unreachable |
+| `/contact/` | Receives the form (POST only) and saves it |
+| `/admin/` | Read the messages and tick them when handled; upload PDFs (Jazzmin theme) |
 
-- **User-Friendly Interface**:  
-  A sleek and intuitive design for effortless navigation and usability.  
+## Quickstart
 
-- **Real-Time Updates**:  
-  Stay updated with live market data and transaction history.  
+Requires [uv](https://docs.astral.sh/uv/) (Python 3.13).
 
-- **Cross-Platform Compatibility**:  
-  Accessible on desktop and mobile devices for convenience.  
+```bash
+uv sync
+cp .env.example .env              # set DEBUG=true for local work
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
+uv run python manage.py runserver  # http://127.0.0.1:8000
+```
 
-- **Customizable Wallets**:  
-  Manage and personalize your digital wallets with ease.  
+### The live inventory list
 
----
+The list is exported with a Google **service account**:
 
-## 🛠️ Technology Stack  
+1. Create a service account in Google Cloud and a JSON key for it.
+2. Share the inventory Google Sheet with the service account's e-mail address (Viewer is enough).
+3. Set `INVENTORY_SHEET_ID` (the long id in the sheet's URL) and `GOOGLE_APPLICATION_CREDENTIALS` (the path of the key file, **outside the repository**).
 
-- **Frontend**: JavaScript, CSS, HTML  
-- **Backend**: Python  
-- **Database**: To be determined based on deployment needs  
-- **Other Tools**:  
-  - Responsive CSS frameworks  
-  - Secure backend APIs  
+Without them `/inventory/` answers 503 and the rest of the site works. The app only asks for read access to Drive (it used to ask for full access).
 
----
+## Configuration
 
-## 🚀 Getting Started  
+Environment variables, or a local `.env` read by `manage.py`. An empty value counts as unset. [`.env.example`](./.env.example) lists them all.
 
-Follow these steps to set up and run SuffolkCoins locally:  
+| Variable | Default | |
+|---|---|---|
+| `SECRET_KEY` | none | **Required** unless `DEBUG=true` |
+| `ALLOWED_HOSTS` | none (localhost when `DEBUG=true`) | Comma-separated host names. **Set it in production** or every request is refused |
+| `DEBUG` | `false` | Local development only |
+| `HTTPS_ONLY` | `true` unless `DEBUG` | Redirect to HTTPS, secure cookies, HSTS (expects a TLS-terminating proxy that sets `X-Forwarded-Proto`) |
+| `HSTS_SECONDS`, `CSRF_TRUSTED_ORIGINS` | `3600`, empty | |
+| `DATABASE_PATH`, `STATIC_ROOT`, `MEDIA_ROOT` | `./db.sqlite3`, `./staticfiles`, `./media` | |
+| `GOOGLE_APPLICATION_CREDENTIALS`, `INVENTORY_SHEET_ID` | none | See above |
+| `INVENTORY_CACHE_SECONDS` | `300` | How long the exported PDF is reused |
+| `LOG_LEVEL` | `INFO` | Logs go to the console |
 
-### 1. Prerequisites  
+## Project structure
 
-Ensure the following are installed on your system:  
-- **Node.js**: Version 16 or above  
-- **Python**: Version 3.8 or above  
-- **Git**  
+```
+suffolkcoins/    settings (environment driven), urls, wsgi/asgi, settings_test
+inventory/       models (ContactMessage, Inventory), views, forms, admin, drive.py (the Google export)
+templates/       base, index and the partials (navbar, carousel, form, footer)
+static/          banners, logo, css/site.css (built, committed), js/carousel.js
+assets/site.css  Tailwind entry point;  package.json builds static/css/site.css
+tests/           pytest-django
+Dockerfile  pyproject.toml  uv.lock
+```
 
-### 2. Clone the Repository  
+The stylesheet is compiled with Tailwind and committed, so deploying needs no Node.js. After changing templates run `npm ci && npm run build:css` and commit the result (CI checks it is up to date).
 
-```bash  
-git clone https://github.com/kneeraazon404/suffolkcoins.git  
-cd suffolkcoins  
-```  
+## Testing
 
-### 3. Install Dependencies  
+```bash
+uv run pytest -q                          # 66 tests, 95% coverage
+uv run ruff check . && uv run ruff format --check .
+uv run bandit -q -r inventory suffolkcoins manage.py
+```
 
-#### For Frontend:  
-```bash  
-npm install  
-```  
+## Deployment
 
-#### For Backend:  
-Set up a virtual environment and install Python dependencies:  
-```bash  
-python -m venv venv  
-source venv/bin/activate  # On Windows: venv\Scripts\activate  
-pip install -r requirements.txt  
-```  
+```bash
+docker build -t suffolkcoins .
+docker run -d -p 8000:8000 -v suffolkcoins-data:/data \
+  -e SECRET_KEY=... -e ALLOWED_HOSTS=example.com \
+  -e INVENTORY_SHEET_ID=... -e GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/google.json \
+  -v /path/to/service-account.json:/run/secrets/google.json:ro \
+  suffolkcoins
+```
 
-### 4. Run the Application  
+The image runs as a non-root user, applies migrations on start and serves static files itself (WhiteNoise); put TLS in front. The database and uploaded files live in the `/data` volume. Back that volume up: it holds your customers' messages (names and phone numbers).
 
-#### Start the Frontend:  
-```bash  
-npm start  
-```  
+## Versions
 
-#### Start the Backend:  
-```bash  
-python app.py  
-```  
+[VERSIONS.md](./VERSIONS.md). What changed and what needs your attention (**a Google key in the git history**): [work-done.md](./work-done.md).
 
-The application will be accessible at `http://localhost:3000` for the frontend and the backend API at `http://localhost:5000`.  
+## License
 
----
-
-## 📘 Documentation  
-
-Detailed documentation for SuffolkCoins, including API references and frontend details, will be available soon.  
-
----
-
-## 📜 License  
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.  
-
----
-
-## 🤝 Contributions  
-
-Contributions are welcome! Follow these steps to contribute:  
-
-1. Fork the repository.  
-2. Create a new branch for your feature or fix:  
-   ```bash  
-   git checkout -b feature-name  
-   ```  
-3. Commit your changes:  
-   ```bash  
-   git commit -m "Add feature-name"  
-   ```  
-4. Push the branch:  
-   ```bash  
-   git push origin feature-name  
-   ```  
-5. Submit a pull request.  
-
+MIT, see [LICENSE](./LICENSE).

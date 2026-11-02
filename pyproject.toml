@@ -1,0 +1,32 @@
+[project]
+name = "suffolkcoins"
+version = "1.0.0"
+description = "Website of Suffolk Coins: a landing page, a live inventory list exported from a Google Sheet as a PDF, and a contact form."
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+dependencies = [
+    "django>=5.2,<5.3",  # 5.2 is the long-term-support release
+    "django-jazzmin>=3.0",
+    "google-api-python-client>=2.150",
+    "google-auth>=2.35",
+    "gunicorn>=23",
+    "whitenoise>=6.7",
+    "python-dotenv>=1.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-django>=4.9", "pytest-cov>=6", "ruff>=0.8", "bandit>=1.8"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "suffolkcoins.settings_test"
+python_files = ["tests.py", "test_*.py"]
+testpaths = ["tests"]
+addopts = "--cov=inventory --cov=suffolkcoins --cov-report=term-missing"
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["staticfiles", "inventory/migrations"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "DJ"]

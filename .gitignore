@@ -264,3 +264,20 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,django
+
+# Secrets and runtime data: never commit these
+credentials.json
+*-credentials.json
+google-credentials.json
+staticfiles/
+logs/
+media/
+*.sqlite3
+.env.*
+!.env.example
+
+# Tooling
+node_modules/
+.coverage
+htmlcov/
+.ruff_cache/

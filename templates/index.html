@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
-{%load static %}
+{% load static %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto">
+  <div class="max-w-7xl mx-auto">
     {% include 'partials/carousel.html' %}
-</div>
-
+  </div>
+  {% include 'partials/form.html' %}
 {% endblock content %}
+
+{% block scripts %}
+  <script src="{% static 'js/carousel.js' %}" defer></script>
+{% endblock %}

@@ -1,35 +1,35 @@
-<div class="text-4xl sm:text-5xl text-center font-bold text-green-800 uppercase mb-8">
-    Live Chat Box
-</div>
+<section id="contact">
+  <h2 class="text-4xl sm:text-5xl text-center font-bold text-green-800 uppercase mb-8">Live Chat Box</h2>
 
-<div class="w-full sm:w-3/4 lg:w-1/2 px-2 sm:px-4 rounded-xl py-4 mx-auto">
-    <form class="bg-white shadow-md ring-1 ring-gray-900/5 sm:rounded-xl px-4 sm:px-8 py-6">
-        <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
-
-            <div class="sm:col-span-3">
-                <label for="first-name" class="block text-sm font-medium leading-6 text-gray-900">Full name</label>
-                <input type="text" name="first-name" id="first-name" autocomplete="given-name"
-                    class="mt-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6" />
-            </div>
-
-            <div class="sm:col-span-3">
-                <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Phone No</label>
-                <input type="text" name="last-name" id="last-name" autocomplete="family-name"
-                    class="mt-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6" />
-            </div>
-
-            <div class="sm:col-span-6">
-                <label for="text" class="block text-sm font-medium leading-6 text-gray-900">Message</label>
-                <textarea id="text" name="text" autocomplete="message"
-                    class="mt-1 block w-full min-w-full min-h-32 rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6"></textarea>
-            </div>
+  <div class="w-full sm:w-3/4 lg:w-1/2 px-2 sm:px-4 rounded-xl py-4 mx-auto">
+    <form method="post" action="{% url 'contact' %}" class="bg-white shadow-md ring-1 ring-gray-900/5 sm:rounded-xl px-4 sm:px-8 py-6">
+      {% csrf_token %}
+      <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+        <div class="sm:col-span-3">
+          <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">{{ form.name.label }}</label>
+          {{ form.name }}
+          {% for error in form.name.errors %}<p class="text-sm text-red-700 mt-1">{{ error }}</p>{% endfor %}
         </div>
-
-        <div class="mt-6 flex items-center justify-end gap-x-4">
-            <button type="submit"
-                class="rounded-md bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 focus:ring focus:ring-indigo-200 transition duration-150 ease-in-out">
-                Send Message
-            </button>
+        <div class="sm:col-span-3">
+          <label for="{{ form.phone.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">{{ form.phone.label }}</label>
+          {{ form.phone }}
+          {% for error in form.phone.errors %}<p class="text-sm text-red-700 mt-1">{{ error }}</p>{% endfor %}
         </div>
+        <div class="sm:col-span-6">
+          <label for="{{ form.message.id_for_label }}" class="block text-sm font-medium leading-6 text-gray-900">{{ form.message.label }}</label>
+          {{ form.message }}
+          {% for error in form.message.errors %}<p class="text-sm text-red-700 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        {# Honeypot: hidden from people, filled in by bots. #}
+        <div class="hidden" aria-hidden="true">
+          <label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-x-4">
+        <button type="submit" class="rounded-md bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 focus:ring focus:ring-indigo-200 transition duration-150 ease-in-out">
+          Send Message
+        </button>
+      </div>
     </form>
-</div>
+  </div>
+</section>
